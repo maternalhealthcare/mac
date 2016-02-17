@@ -75,24 +75,28 @@
     "react-selectize": "^0.3.7",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
-    "socket.io":"^1.4.4",
-    "socket.io-client":"^1.4.4",
+    "socket.io": "^1.4.4",
+    "socket.io-client": "^1.4.4",
     "amqplib": "",
     "request": "^2.67.0",
-	"bitsyntax": "~0.0.4",
+    "bitsyntax": "~0.0.4",
     "buffer-more-ints": "0.0.2",
     "readable-stream": "1.x >=1.1.9",
     "when": "~3.6.2",
-	"node-uuid": ""
+    "node-uuid": ""
   },
   "dependencies": {
+    "body-parser": "~1.13.2",
     "bootstrap": "^3.3.5",
     "express": "^4.13.3",
     "flux": "^2.1.1",
     "history": "^1.17.0",
+    "invariant": "^2.2.0",
     "jquery": "*",
     "jspdf-browserify": "^1.0.272",
+    "mongodb": "^2.1.7",
     "object-assign": "^4.0.1",
+    "queue": "^3.1.0",
     "rc-datepicker": "^3.0.0",
     "react": "^0.14.3",
     "react-addons-update": "^0.14.5",
@@ -102,8 +106,7 @@
     "react-deep-link-state": "0.0.2",
     "react-dom": "^0.14.3",
     "react-router": "^1.0.0",
-    "request": "^2.67.0",
-    "body-parser": "~1.13.2"
+    "request": "^2.67.0"
   },
   "engines": {
     "node": "5.1.0"

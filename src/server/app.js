@@ -7,21 +7,26 @@ var path = require('path');
 var app = express();
 var request = require('request');
 var bodyParser = require('body-parser');
-
+// var configuration = require('./config/config');
+var fs = require('fs');
+var constants = require('./utils/ServerConstants');
+var config;
 var port = process.env.PORT || 3000;
-const FHIR_DOMAIN_URL = 'http://ec2-52-77-242-7.ap-southeast-1.compute.amazonaws.com/FHIRServer/';
+const FHIR_DOMAIN_URL = 'http://ec2-52-77-242-7.ap-southeast-1.compute.amazonaws.com/';
+var service = require('./services/dataStoreService');
 
 app.use(bodyParser.json());
 
-app.use(express.static(__dirname + '/dist/'));
+app.use(express.static(__dirname + '../../../dist/'));
+app.use('/documentManager',service);
 
 //var proxyUrl = 'http://' + '<username>' + ':' + '<password>' + '@' + 'cis-india-pitc-bangalorez.proxy.corporate.ge.com:' + 80;
+//request = request.defaults({proxy: proxyUrl});
 // var proxyUrl='https_proxy=http://http-proxy.health.ge.com:88';
 
 
-
 app.get('/', function(req, res) {
-    res.sendFile(path.join(__dirname + '/dist/index.html'));
+    res.sendFile(path.join(__dirname + '../../../dist/index.html'));
 }
 );
 
@@ -56,26 +61,40 @@ app.get('/api/proxyUrl', function(req, res, next) {
 
     let url = req.headers.url;
 
-    var uri = FHIR_DOMAIN_URL + url;
+    if (url === '/api/config') {
+        // Fetching configuration from node server
+        fs.readFile(__dirname + '/config/config.json', 'utf8', function(err, contents) {
+            if (err != null) {
+                next(constants.error.CONFIG_FILE_MISSING);
+            } else {
+                config = JSON.parse(contents);
+                res.json(config);
+            }
+        });
+    } else {
+        // Fetching data from FHIR server
 
-    var datas = JSON.stringify(req.body);
-    var options = {
-        uri: uri,
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json; charset=utf-8'
-        },
-        body: datas
-    };
+        var uri = FHIR_DOMAIN_URL + url;
 
-    request(options, function(error, response, body) {
-        if (error) {
-            next(error);
-        }
-        if (!error && response.statusCode == 200) {
-            res.json(JSON.parse(body));
-        }
-    });
+        var datas = JSON.stringify(req.body);
+        var options = {
+            uri: uri,
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json; charset=utf-8'
+            },
+            body: datas
+        };
+
+        request(options, function(error, response, body) {
+            if (error) {
+                next(error);
+            }
+            if (!error && response.statusCode == 200) {
+                res.json(JSON.parse(body));
+            }
+        });
+    }
 });
 
 
@@ -94,7 +113,7 @@ app.get('/api/proxy', function(req, res, next) {
         },
         body: datas
     };
-    
+
     request(options, function(error, response, body) {
         if (error) {
             next(error);
@@ -108,7 +127,7 @@ app.get('/api/worklists', function(req, res, next) {
     var options = '';
     var datas = JSON.stringify(req.body);
     options = {
-        uri: FHIR_DOMAIN_URL + 'patientRegistration/search',
+        uri: FHIR_DOMAIN_URL + 'FHIRServer/patientRegistration/search',
         method: 'GET',
         headers: {
             'Content-Type': 'application/json; charset=utf-8'
@@ -133,7 +152,7 @@ app.get('/api/getWorklists', function(req, res, next) {
     var searchString = req.headers['searchstring'];
     if (typeof req.headers['searchstring'] !== 'undefined') {
         options = {
-            uri: FHIR_DOMAIN_URL + 'patientRegistration/search?searchString=' + searchString,
+            uri: FHIR_DOMAIN_URL + 'FHIRServer/patientRegistration/search?searchString=' + searchString,
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json; charset=utf-8'
@@ -142,7 +161,7 @@ app.get('/api/getWorklists', function(req, res, next) {
         };
     } else {
         options = {
-            uri: FHIR_DOMAIN_URL + 'patientRegistration/search',
+            uri: FHIR_DOMAIN_URL + 'FHIRServer/patientRegistration/search',
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json; charset=utf-8'
@@ -155,13 +174,13 @@ app.get('/api/getWorklists', function(req, res, next) {
             next(error);
         }
         if (!error && response.statusCode == 200) {
-            try{
+            try {
                 res.json(JSON.parse(body));
-            }catch(e){
+            } catch (e) {
                 res.status(500).send(body);
-//        		 next(body);
+                //        		 next(body);
             }
-           
+
         }
     });
 });

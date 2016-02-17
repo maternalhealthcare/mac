@@ -1,0 +1,12 @@
+{
+    "validation": {
+        "maxHeight": 288,
+        "maxPulseRate": 250,
+        "maxRespiratoryRate": 100,
+        "maxFHS": 200,
+        "maxBPMax": 300,
+        "maxBPMin": 200,
+        "maxWeight": 200
+    },
+     "proxyURL": "/api/proxyUrl"
+}
